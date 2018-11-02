@@ -1,0 +1,109 @@
+<idea-plugin>
+  <id>com.maybe.plugin.mybatis</id>
+  <name>Nana-Mybatis</name>
+    <version>1.0.2</version>
+    <vendor email="damon_secret@163.com" url="https://github.com/damon4u/nana-mybatis">maybe</vendor>
+
+    <description><![CDATA[
+      A simple plugin for Mybatis.<br>
+      This Plugin is fork from https://github.com/wuzhizhan/free-idea-mybatis <br>
+      <b>Features:</b> <br>
+      <ul>
+      <li>create reference for &lt;resultMap&gt; and &lt;sql&gt; statements in Mybatis XML.</li>
+      <li>create reference for property in &lt;resultMap&gt; statements to corresponding entity.</li>
+      <li>create reference for SQL XmlToken and &lt;if test=""&gt; attribute to the corresponding parameter of the method in DAO interface.</li>
+      <li>support sql statement completion when you type `#{}` in Mybatis XML with parameters of the corresponding method in DAO interface.</li>
+      <li>support &lt;if test=""&gt; statement completion in Mybatis XML with parameters of the corresponding method in DAO interface.</li>
+      <li>support line marker with beautiful icon for DAO method navigating to corresponding statement in Mybatis XML.</li>
+      <li>support line marker with beautiful icon for statement in Mybatis XML navigating to corresponding method in DAO interface.</li>
+      <li>support inspection for Mybatis XML statement which checks whether a corresponding method exists.</li>
+      <li>support inspection for DAO interface method which checks whether a corresponding Mybatis XML statement exists.</li>
+      </ul>
+    ]]></description>
+
+    <change-notes><![CDATA[
+      <ul>
+      
+      <li><b>1.0.2:</b>
+        <br> support alias converter for parameterType and resultType.
+      </li>
+      
+      <li><b>1.0.1:</b>
+        <br> create reference for SQL XmlToken and &lt;if test=""&gt; attribute to the corresponding parameter of the method in DAO interface;
+        <br> support sql statement completion when you type `#{}` in Mybatis XML with parameters of the corresponding method in DAO interface;
+        <br> support &lt;if test=""&gt; statement completion in Mybatis XML with parameters of the corresponding method in DAO interface;
+        <br> support line marker with beautiful icon for DAO method navigating to corresponding statement in Mybatis XML;
+        <br> support line marker with beautiful icon for statement in Mybatis XML navigating to corresponding method in DAO interface;
+        <br> support inspection for Mybatis XML statement which checks whether a corresponding method exists;
+        <br> support inspection for DAO interface method which checks whether a corresponding Mybatis XML statement exists.
+      </li>
+      
+      <li><b>1.0.0:</b>
+        <br> created;
+        <br> create reference for &lt;resultMap&gt; and &lt;sql&gt; statements in Mybatis XML;
+        <br> create reference for property in &lt;resultMap&gt; statements to corresponding entity.
+      </li>
+      
+      </ul>
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="145"/>
+
+    <depends optional="true">com.intellij.database</depends>
+    <!-- 依赖spring，如AliasService中使用spring的mybatis配置 -->
+    <depends optional="true">com.intellij.spring</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <!-- projectService -->
+        <projectService serviceImplementation="com.maybe.plugin.mybatis.service.JavaService"/>
+        <projectService serviceImplementation="com.maybe.plugin.mybatis.alias.AliasService"/>
+
+        <!-- 解析xml文件，方便使用DOM读写 -->
+        <dom.fileDescription implementation="com.maybe.plugin.mybatis.dom.description.MapperDescription"/>
+
+        <!-- mapper文件中sql语句，为dao方法参数（多个参数时@Param注解标记）添加引用 -->
+        <psi.referenceContributor implementation="com.maybe.plugin.mybatis.reference.SqlParamReferenceContributor"/>
+
+        <!-- mapper文件中if条件，为dao方法参数（多个参数时@Param注解标记）添加引用 -->
+        <psi.referenceContributor implementation="com.maybe.plugin.mybatis.reference.TestParamReferenceContributor"/>
+
+        <!-- mapper文件中，写test条件查询时提示方法参数 -->
+        <completion.contributor language="XML"
+                                implementationClass="com.maybe.plugin.mybatis.completion.TestParamCompletionContributor"/>
+
+        <!-- mapper文件中，写sql语句时#{}提示方法参数 -->
+        <completion.contributor language="SQL"
+                                implementationClass="com.maybe.plugin.mybatis.completion.SqlParamCompletionContributor"
+                                order="first"/>
+
+        <!-- 在java类或者方法行添加跳转到mapper的icon -->
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.maybe.plugin.mybatis.linemarker.DaoToXmlLineMarkerProvider"/>
+
+        <!-- 在mapper文件中添加跳转到java类的icon -->
+        <codeInsight.lineMarkerProvider language="XML"
+                                        implementationClass="com.maybe.plugin.mybatis.linemarker.XmlToDaoLineMarkerProvider"/>
+
+        <!-- 检查mapper文件中的语句有没有对应的dao层方法 -->
+        <localInspection language="XML" shortName="MybatisMapperXmlInspection" enabledByDefault="true" level="ERROR"
+                         displayName="Mapper xml inspection"
+                         groupName="Mybatis"
+                         implementationClass="com.maybe.plugin.mybatis.inspection.MapperXmlInspection"/>
+
+        <!-- 检查dao层方法有没有对应的mapper语句 -->
+        <localInspection language="JAVA" shortName="MybatisMapperMethodInspection"
+                         displayName="Mapper method inspection"
+                         groupName="Mybatis" enabledByDefault="true" level="ERROR"
+                         implementationClass="com.maybe.plugin.mybatis.inspection.MapperMethodInspection"/>
+
+
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+
+</idea-plugin>
