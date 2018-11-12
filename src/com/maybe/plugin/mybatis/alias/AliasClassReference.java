@@ -5,7 +5,6 @@ import com.google.common.collect.Collections2;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.xml.XmlAttributeValue;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,9 +46,6 @@ public class AliasClassReference extends PsiReferenceBase<XmlAttributeValue> {
     public Object[] getVariants() {
         AliasService aliasService = AliasService.getInstance(getElement().getProject());
         Collection<String> result = Collections2.transform(aliasService.getAliasCollection(getElement()), FUN);
-        if (CollectionUtils.isEmpty(result)) {
-            return new String[0];
-        }
         return result.toArray(new String[0]);
     }
 }
